@@ -1,0 +1,3 @@
+[submodule "fennel-conditions"]
+	path = fennel-conditions
+	url = https://gitlab.com/andreyorst/fennel-conditions.git
