@@ -1,20 +1,18 @@
-(local {: error : invoke-restart : make-condition} (require :fennel-conditions))
-(import-macros {: handler-bind : restart-case : define-condition} :fennel-conditions)
+(local {: directlua : tex-macro-str} (require "scallop-tex"))
 
 (fn preamble []
-  (.. "\\directlua{sc = require(\"scallop\")} "
-      "\\directlua{sc.preamble()}"))
+  (directlua "scallop = require(\"scallop\")")
+  (directlua "scallop.preamble()"))
 
 (fn inner []
-  (.. "\\directlua{sc.inner()}"))
+  (directlua "scallop.inner()"))
 
 ;; how to compose class?
 (fn init []
-  (tex.print
-   (.. "\\documentclass{minimal} "
-       (preamble)
-       " \\begin{document} "
-       (inner)
-       " \\end{document}")))
+  (tex.print (tex-macro-str :documentclass nil :minimal))
+  (preamble)
+  (tex.print (tex-macro-str :begin nil :document))
+  (inner)
+  (tex.print (tex-macro-str :end nil :document)))
 
 { : init }
