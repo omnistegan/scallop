@@ -11,7 +11,9 @@
 
 (local in (* cm 2.54))
 
+(local px (/ in 227)) ;; ppi is 227
+
 (fn topt [n]
   (.. (/ n (^ 2 16)) "pt"))
 
-{: pt : bp : dd : em : ex : pc : mm : cm : in : topt}
+{: pt : bp : dd : em : ex : pc : mm : cm : in : px : topt}

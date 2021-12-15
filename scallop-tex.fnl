@@ -1,3 +1,5 @@
+(local {: print} tex)
+
 (fn options-str [t]
   (var s "")
   (each [k v (pairs t)]
@@ -9,20 +11,41 @@
   (s:sub 2))
 
 (fn tex-macro-str [name opts body]
+  "name is the first part of the macro, directly after \\\\
+opts can either be a string or table. Tables will be made into
+a string. Body can also be a (presumed seq) table. The multiple
+strings will be options in curlies
+
+//name[optsBool,optsStr=str,optsTable={nestedBool}]{body-only-or-first}{other-in-body-table}"
   (let [optstr (if (= (type opts) :table)
                    (.. "[" (options-str opts) "]")
                    opts (.. "[" opts "]")
                    "")
-        bodystr (if body (.. "{" body "}") "")]
+        bodystr (if (= (type body) :table)
+                    (do (var s "") (each [_ v (ipairs body)] (set s (.. s "{" v "}"))) s)
+                    body
+                    (.. "{" body "}")
+                    "")]
      (.. " \\" name optstr bodystr " ")))
 
+(fn print-tex-macro [...]
+  (print (tex-macro-str ...)))
+
 (fn usepackage [body opts]
-  (tex.print (tex-macro-str :usepackage opts body)))
+  (print-tex-macro :usepackage opts body))
 
 (fn directlua [luastr]
-  (tex.print (tex-macro-str :directlua nil luastr)))
+  (print-tex-macro :directlua nil luastr))
 
 (fn directlualib [str]
   (directlua (.. "scallop.lib." str "()")))
 
-{: usepackage : directlua : directlualib : tex-macro-str }
+(fn \\ [] (print-tex-macro "\\"))
+
+{: usepackage
+ : directlua
+ : directlualib
+ : \\
+ : tex-macro-str
+ : print-tex-macro
+ : print}
