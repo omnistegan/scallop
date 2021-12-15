@@ -1,0 +1,36 @@
+#+TITLE: Scallop
+
+* Scallop
+
+Scallop is a sandbox plaything for me to do some lualatex stuff in.
+
+** What's going on here?
+
+This project is rendered to a pdf with this command:
+
+#+begin_src shell
+lualatex --interaction=nonstopmode scallop.tex
+#+end_src
+
+This will generate a ~pdf~. Here you can see it references ~scallop.tex~, but the content of the document is actually found in the ~fnl~ code.
+
+The ~scallop.tex~ file is very simple, it just loads the ~init.lua~ file:
+
+#+begin_src latex
+\directlua{dofile("init.lua")}
+#+end_src
+
+~init.lua~ is not much more complicated, it set's up Fennel and calls ~init()~ from the ~init-scallop~ module:
+#+begin_src lua
+local fennel = require("fennel")
+table.insert(package.loaders or package.searchers, fennel.searcher)
+local init = require("init-scallop")
+init.init()
+#+end_src
+
+[[./init-scallop.fnl][~init-scallop~]] is where we actually start building our document. First, our ~scallop~ module, (the one with the content) is required. It's ~preamble~ and ~inner~ functions are called, and the ~document~ is ~begin~ and ~end~ around the inner content.
+
+Various tex helpers written in [[./scallop-tex.fnl][~scallop-tex~]].
+
+
+TODO: Explain using ~write~ and direct node manipulation and how it can be easily interspersed with other content.
